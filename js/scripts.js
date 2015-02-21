@@ -1,3 +1,3 @@
 $( document ).ready(function() {
-    $('body').prm({debug: false});
+    $('body').prm({logging: ['viewport','video'] });
 });
