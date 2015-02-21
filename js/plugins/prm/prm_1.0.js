@@ -11,15 +11,10 @@
  
     $.fn.prm = function( options ) {
         //settings
-        var settings = $.extend({
-
-        }, defaults, options);
-
-        //Plugin Defaults
-        var defaults = {
-            debug : false,
-            logging : []
-        }   
+        var settings = $.extend({}, {
+            debug: false,
+            logging: []
+        }, options);
 
         var viewport = {
             layoutWidth  : 0,
@@ -27,7 +22,11 @@
             visualWidth  : 0,
             visualHeight : 0
         }
+        
+        //init logging
+        logging.init(settings.logging);
 
+        
         //init plugin 
         getViewportValues();
 
@@ -52,7 +51,7 @@
             viewport.visualWidth =  window.innerWidth;
             viewport.visualHeight = window.innerHeight;
 
-            if(settings.debug || utility.inArrayCaseInsensitive('viewport', settings.logging))
+            if(logging.all || logging.viewport)
             {
                 logging.logViewPortValues(viewport);
             }
@@ -66,7 +65,7 @@
                 $video.attr('id', 'video_' + utility.guidGenerator());
             }
 
-            if(settings.debug || utility.inArrayCaseInsensitive('video', settings.logging))
+            if(logging.all || logging.video)
             {
                 logging.logVideoDetails($video);
             }
@@ -100,6 +99,19 @@ var utility = {
 
 
 var logging = {
+    all: false,
+    viewport : false,
+    video : false,
+    init : function(logSettingsArray)
+    {        
+        if(logSettingsArray.length > 0)
+        {
+            logging.all = utility.inArrayCaseInsensitive('all', logSettingsArray);
+            logging.viewport = utility.inArrayCaseInsensitive('viewport', logSettingsArray);
+            logging.video = utility.inArrayCaseInsensitive('video', logSettingsArray);
+        }
+        
+    },
     //viewport
     logViewPortValues: function(viewport)
     {
