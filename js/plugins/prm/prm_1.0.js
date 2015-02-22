@@ -23,14 +23,7 @@
         var settings = $.extend({}, {
             debug: false,
             logging: []
-        }, options);
-
-        var viewport = {
-            layoutWidth  : 0,
-            layoutHeight : 0,
-            visualWidth  : 0,
-            visualHeight : 0
-        }
+        }, options);        
 
         //Public Functions
         base.pubicThing = function()
@@ -49,37 +42,21 @@
             //init logging
             logging.init();
 
-            getViewportValues();
+            //init display
+            display.init();
 
-            //browser events
-            $( window ).resize(function() {
-                getViewportValues();
-            });
-
+            //init elements
             initElements();
         }       
 
         
-        function getViewportValues()
-        {
-            viewport.layoutWidth =  document.documentElement.clientWidth;
-            viewport.layoutHeight = document.documentElement.clientHeight;
-            viewport.visualWidth =  window.innerWidth;
-            viewport.visualHeight = window.innerHeight;
-
-            if(logging.all || logging.viewport)
-            {
-                logging.logViewPortValues(viewport);
-            }
-        }
-
         function initElements()
         {
             base.$el.each(function(){
                 switch($(this).tagName()){
-                case 'video':
-                    initVideo($(this));
-                    break;
+                    case 'video':
+                        initVideo($(this));
+                        break;
                 }
             });
         }
@@ -97,6 +74,35 @@
                 logging.logVideoDetails($video);
             }
         };
+
+        var display = {
+            viewport : {
+                layoutWidth  : 0,
+                layoutHeight : 0,
+                visualWidth  : 0,
+                visualHeight : 0
+            },
+            init: function (){
+                display.setViewportValues();
+                $( window ).resize(function() {
+                    display.setViewportValues();
+                });
+                
+            },
+            setViewportValues: function()
+            {
+                display.viewport.layoutWidth =  document.documentElement.clientWidth;
+                display.viewport.layoutHeight = document.documentElement.clientHeight;
+                display.viewport.visualWidth =  window.innerWidth;
+                display.viewport.visualHeight = window.innerHeight;
+
+                if(logging.all || logging.viewport)
+                {
+                    logging.logViewPortValues(display.viewport);
+                }
+            }
+
+        }
 
         var utility = {
             guidGenerator: function()
