@@ -1,3 +1,4 @@
 $( document ).ready(function() {
-    $('body').prm({logging : ['all']});
+    var a = $('body').pelican('.prm');
+
 });
