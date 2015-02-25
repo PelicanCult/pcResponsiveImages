@@ -7,20 +7,7 @@
   return this.prop('tagName').toLowerCase();
 };
 
-function debounce(func, wait, immediate) {
-    var timeout;
-    return function() {
-        var context = this, args = arguments;
-        var later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-    };
-};
+
 
 (function ( $ ) {
     "use strict";
@@ -36,7 +23,7 @@ function debounce(func, wait, immediate) {
         var currentBreakpoint = '';
         //settings
         var settings = $.extend({}, {
-            breakpoints : [],
+            breakpoints : {},
             debug: false,
             logging: []
         }, options);        
@@ -63,10 +50,13 @@ function debounce(func, wait, immediate) {
         var setBreakpoint = debounce(function() {
 
 
-
             if(logging.all || logging.viewport)
             {
                 logging.logViewPortValues();
+            }
+            if(logging.all || logging.breakpoints)
+            {
+                logging.logBreakPoints();
             }
         }, 250);
 
@@ -112,10 +102,27 @@ function debounce(func, wait, immediate) {
             }
         }
 
+        //debounce
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
         var logging = {
             all: false,
             viewport : false,
             video : false,
+            breakpoints: false,
             init : function()
             {        
                 if(settings.logging.length > 0)
@@ -123,13 +130,16 @@ function debounce(func, wait, immediate) {
                     logging.all = utility.inArrayCaseInsensitive('all', settings.logging);
                     logging.viewport = utility.inArrayCaseInsensitive('viewport', settings.logging);
                     logging.video = utility.inArrayCaseInsensitive('video', settings.logging);
+                    logging.breakpoints = utility.inArrayCaseInsensitive('breakpoints', settings.logging);
                 }            
                 
             },
             //viewport
             logBreakPoints: function()
             {
-                
+                for(var key in settings.breakpoints){
+                    console.log(key + " = " + settings.breakpoints[key]);
+                }
             },
             //viewport
             logViewPortValues: function()
