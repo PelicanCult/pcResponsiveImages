@@ -57,7 +57,7 @@ function debounce(func, wait, immediate) {
             //init elements
             updateElements();
 
-            window.addEventListener('resize orientationchange', setBreakpoint);
+            $(window).on('resize orientationchange', setBreakpoint);
         }       
 
         var setBreakpoint = debounce(function() {
