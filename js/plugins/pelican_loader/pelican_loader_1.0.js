@@ -1,6 +1,6 @@
 /*!
  * Pelican Responsive Media v1.0
- * Load responsive images and videos
+ * Load responsive images
  */
 
  $.fn.tagName = function() {
@@ -47,7 +47,7 @@
 
             $(window).on('resize orientationchange', setBreakpoint);
             $( window ).scroll(function() {
-              setScroll();              
+                setScroll();              
             });
         }    
 
@@ -55,7 +55,10 @@
         var debug = {
             init : function(){
                 if(settings.debug){
+                    console.log('-----------Base Object:');
                     console.log(base);
+                    console.log('-----------Settings:');
+                    console.log(settings);
                 }
             }
         }       
@@ -70,44 +73,50 @@
 
         //breakpoints
         var setBreakpoint = debounce(function() {
-            //save currently set width for comparison
-            var origWidth = currentWidth;
             //save currently set breakpoint for comparison
             var origBreakpoint = currentBreakpoint;
+            //save currently set width for comparison
+            var origWidth = currentWidth;
             //update the current width with the new clientWidth
             currentWidth = document.documentElement.clientWidth;
             //check if the browser is getting smaller
-            var isSmaller = (currentWidth < origWidth);
+            var isSmaller = (currentWidth < origWidth);            
+            
+            
             //set the new breakpoint
             $.each(settings.breakpoints, function(i,val){
                 if(val.minWidth === undefined){
                     if(currentWidth <= val.maxWidth)
                     {
                         currentBreakpoint = val;
+                        return;
                     }                    
                 }
                 else if(val.maxWidth === undefined){
                     if(currentWidth >= val.minWidth)
                     {
                         currentBreakpoint = val;
+                        return;
                     }
                 }
                 else{
                     if(currentWidth >= val.minWidth && currentWidth <= val.maxWidth)
                     {
                         currentBreakpoint = val;
+                        return;
                     }
                 }
             });
-
             
-            //check if breakpoint has changed
-            //if so, update elmenents
-            //if loadSmaller set to false, do not update
-            //if new breakpoint is smaller
-            var canUpdate = (settings.loadSmallerImages || (!settings.loadSmallerImages && !isSmaller));
-            if(origBreakpoint.key !== currentBreakpoint.key && canUpdate)
-            {             
+            var validLoadSmaller = (settings.loadSmallerImages || (!settings.loadSmallerImages && !isSmaller));
+            //check if breakpoint has changed           
+            if(origBreakpoint.key !== currentBreakpoint.key && validLoadSmaller)
+            {        
+                if(settings.debug)  
+                {
+                    console.log('-----------Breakpoint Change:');
+                    console.log(currentBreakpoint.key);
+                }   
                 updateElements();
             }
 
@@ -117,39 +126,64 @@
         function updateElements()
         {
             base.$el.each(function(){
-                switch($(this).tagName()){
-                    case 'img':
-                        updateImage($(this));
-                        break;
-                    case 'video':
-                        updateVideo($(this));
-                        break;
+                var $currentElement = $(this);
+                var validViewPort = (!settings.onEnterViewport || (settings.onEnterViewport && isElementInViewport($currentElement)));
+                if(validViewPort){
+                    updateElement($currentElement);
                 }
-            });
+                            
+            });           
+            
         }
 
-        //image functions
-        function updateImage($image){
-            var canUpdate = (!settings.onEnterViewport ||(settings.onEnterViewport && isElementInViewport($image)));
-            var imageSources = $image.data('image-sources');
-            $.each(imageSources,function(i, val){                
-                if(val[currentBreakpoint.key] !== undefined && canUpdate)
+        function updateElement($el){
+            var imageSources = $el.data('image-sources');
+            var imgAttr = '';
+            var updated = false;
+            if(imageSources !== undefined && imageSources.length > 0)
+            {
+                $.each(imageSources,function(i, val){ 
+                    if(val[currentBreakpoint.key] !== undefined)
+                    {
+                        switch($el.tagName()){
+                            case 'img':
+                            //only update if source if different
+                                if($el.attr('src') === undefined || ($el.attr('src').toLowerCase() !== val[currentBreakpoint.key].toLowerCase()))
+                                {
+                                    $el.attr('src',val[currentBreakpoint.key]);
+                                    updated = true;
+                                }                                
+                                break;
+                            case 'video':
+                            //only update if source if different
+                                if($el.attr('poster') === undefined || ($el.attr('poster').toLowerCase() !== val[currentBreakpoint.key].toLowerCase()))
+                                {
+                                    $el.attr('poster',val[currentBreakpoint.key]);
+                                    updated = true;
+                                }                                
+                                break;
+                            default:
+                            //only update if source if different
+
+                                if($el.attr('style') === undefined || $el.attr('style').toLowerCase().indexOf(val[currentBreakpoint.key].toLowerCase()) === -1 )
+                                {
+                                    $el.attr('style', "background-image: url('" + val[currentBreakpoint.key] + "');");
+                                    updated = true;
+                                } 
+                                break; 
+                        }                    
+                    }
+                });
+                if(settings.debug && updated)  
                 {
-                    $image.attr('src',val[currentBreakpoint.key])
-                    if($image.attr('id') == 'thisOne')
-                        {
-                            console.log('--------------loaded-----------------');
-                        }
-                }
-            });   
-        }
+                    console.log('-----------Updated Image on Element:');
+                    console.log($el);
+                } 
+            }
 
-        //video functions
-        function updateVideo($video){
-             
+            
+                   
         }
-
-       
 
         //debounce
         function debounce(func, wait, immediate) {
@@ -175,7 +209,7 @@
             var rect = el.getBoundingClientRect();
             var rectTop = rect.top - settings.viewPortTolerance;
             var rectLeft = rect.left - settings.viewPortTolerance;
-            
+
             var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
             var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
             
