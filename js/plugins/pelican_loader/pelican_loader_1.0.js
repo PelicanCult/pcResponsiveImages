@@ -13,17 +13,21 @@
     "use strict";
 
     //Global Public Variables
-
+    var currentBreakpoint = '';
     $.fn.pelican = function( el, options ) {
         //Global Private Variables
         var base = this; 
         base.$el = $(el);
         base.el = el; 
         base.$el.data('prm', base);
-        var currentBreakpoint = '';
+        
         //settings
         var settings = $.extend({}, {
-            breakpoints : {},
+            breakpoints: [
+                {key: 'small', maxWidth: 768}, 
+                {key: 'medium', minWidth: 769, maxWidth: 1024}, 
+                {key: 'large', minWidth: 1025}
+            ],
             debug: false,
             logging: []
         }, options);        
@@ -38,28 +42,13 @@
             //init logging
             logging.init();
 
-            //set current breakpoint
+            //set current breakpoint            
             setBreakpoint();
-
-            //init elements
-            updateElements();
 
             $(window).on('resize orientationchange', setBreakpoint);
         }       
 
-        var setBreakpoint = debounce(function() {
-
-
-            if(logging.all || logging.viewport)
-            {
-                logging.logViewPortValues();
-            }
-            if(logging.all || logging.breakpoints)
-            {
-                logging.logBreakPoints();
-            }
-        }, 250);
-
+        //elements
         function updateElements()
         {
             base.$el.each(function(){
@@ -74,6 +63,43 @@
             });
         }
 
+        //breakpoints
+        var setBreakpoint = debounce(function() {
+            var currentWidth = document.documentElement.clientWidth;
+
+            $.each(settings.breakpoints, function(i,val){
+                if(val.minWidth === undefined){
+                    if(currentWidth <= val.maxWidth)
+                    {
+                        currentBreakpoint = val.key;
+                    }
+                }
+                else if(val.maxWidth === undefined){
+                    if(currentWidth >= val.minWidth)
+                    {
+                        currentBreakpoint = val.key;
+                    }
+                }
+                else{
+                    if(currentWidth >= val.minWidth && currentWidth <= val.maxWidth)
+                    {
+                        currentBreakpoint = val.key;
+                    }
+                }
+            });
+            
+            updateElements();
+
+            if(logging.all || logging.viewport)
+            {
+                logging.logViewPortValues();
+            }
+            if(logging.all || logging.breakpoints)
+            {
+                logging.logBreakPoints();
+            }
+        }, 250);
+
         //image functions
         function updateImage($image){
             if(logging.all || logging.video)
@@ -81,6 +107,19 @@
                 console.log('--IMG DETAILS');
                 logging.logElementAttributes($image);
             }
+
+            var imageSources = $image.data('image-sources');
+            $.each(imageSources,function(i, o){
+                $.each( o, function( key, value ) {
+                  if(key.toLowerCase() === currentBreakpoint.toLowerCase())
+                  {
+                    $image.attr('src',value);
+                  }
+                });
+            });           
+            
+ 
+
         }
 
         //video functions
@@ -96,8 +135,6 @@
                 if(settings.debug){
                     settings.logging = ['all'];
                     console.log(base);
-                    console.log(settings.breakpoints);
-                    logging.logBreakPoints();
                 }
             }
         }
@@ -137,9 +174,12 @@
             //viewport
             logBreakPoints: function()
             {
-                for(var key in settings.breakpoints){
-                    console.log(key + " = " + settings.breakpoints[key]);
-                }
+                console.log('--BREAK POINTS'); 
+                console.log('----current breakpoint: ' + currentBreakpoint);
+                $.each(settings.breakpoints, function(i,val){
+                    console.log('----key: ' + val.key + ', minWidth: ' + val.minWidth + ", maxWidth: " + val.maxWidth);
+                });
+              
             },
             //viewport
             logViewPortValues: function()
@@ -192,8 +232,7 @@
                     rect.right > 0 &&
                     rect.left < (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */ &&
                     rect.top < (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */;
-            },
-
+            }
         }
 
         base.init();       
