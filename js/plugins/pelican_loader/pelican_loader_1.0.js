@@ -7,8 +7,6 @@
   return this.prop('tagName').toLowerCase();
 };
 
-
-
 (function ( $ ) {
     "use strict";
 
@@ -30,9 +28,11 @@
                 {key: 'medium', minWidth: 769, maxWidth: 1024}, 
                 {key: 'large', minWidth: 1025}
             ],
+            onEnterViewport: false,
+            viewPortTolerance: 25,
+            debounceTolerance: 250,
             loadSmallerImages: true,
             debug: false,
-            logging: []
         }, options);        
 
        
@@ -42,29 +42,31 @@
             //init debug 
             debug.init();
 
-            //init logging
-            logging.init();
-
             //set current breakpoint            
             setBreakpoint();
 
             $(window).on('resize orientationchange', setBreakpoint);
+            $( window ).scroll(function() {
+              setScroll();              
+            });
+        }    
+
+        //debug
+        var debug = {
+            init : function(){
+                if(settings.debug){
+                    console.log(base);
+                }
+            }
         }       
 
-        //elements
-        function updateElements()
-        {
-            base.$el.each(function(){
-                switch($(this).tagName()){
-                    case 'img':
-                        updateImage($(this));
-                        break;
-                    case 'video':
-                        updateVideo($(this));
-                        break;
-                }
-            });
-        }
+        //scroll
+        var setScroll = debounce(function(){
+            if(settings.onEnterViewport)
+            {
+                updateElements();
+            }
+        });
 
         //breakpoints
         var setBreakpoint = debounce(function() {
@@ -103,60 +105,51 @@
             //if so, update elmenents
             //if loadSmaller set to false, do not update
             //if new breakpoint is smaller
-            var canUpdate = (settings.loadSmallerImages === true || (settings.loadSmallerImages === false && isSmaller === false));
+            var canUpdate = (settings.loadSmallerImages || (!settings.loadSmallerImages && !isSmaller));
             if(origBreakpoint.key !== currentBreakpoint.key && canUpdate)
-            {
-                console.log(isSmaller);                
+            {             
                 updateElements();
             }
-            
 
-            if(logging.all || logging.viewport)
-            {
-                logging.logViewPortValues();
-            }
-            if(logging.all || logging.breakpoints)
-            {
-                logging.logBreakPoints();
-            }
-        }, 250);
+        }, settings.debounceTolerance);
+
+         //elements
+        function updateElements()
+        {
+            base.$el.each(function(){
+                switch($(this).tagName()){
+                    case 'img':
+                        updateImage($(this));
+                        break;
+                    case 'video':
+                        updateVideo($(this));
+                        break;
+                }
+            });
+        }
 
         //image functions
         function updateImage($image){
-            if(logging.all || logging.video)
-            {
-                console.log('--IMG DETAILS');
-                logging.logElementAttributes($image);
-            }
-
+            var canUpdate = (!settings.onEnterViewport ||(settings.onEnterViewport && isElementInViewport($image)));
             var imageSources = $image.data('image-sources');
             $.each(imageSources,function(i, val){                
-                if(val[currentBreakpoint.key] !== undefined)
+                if(val[currentBreakpoint.key] !== undefined && canUpdate)
                 {
                     $image.attr('src',val[currentBreakpoint.key])
+                    if($image.attr('id') == 'thisOne')
+                        {
+                            console.log('--------------loaded-----------------');
+                        }
                 }
-            });           
-            
- 
-
+            });   
         }
 
         //video functions
         function updateVideo($video){
-            if(logging.all || logging.video)
-            {                
-                logging.logVideoDetails($video);
-            }            
+             
         }
 
-        var debug = {
-            init : function(){
-                if(settings.debug){
-                    settings.logging = ['all'];
-                    console.log(base);
-                }
-            }
-        }
+       
 
         //debounce
         function debounce(func, wait, immediate) {
@@ -174,85 +167,24 @@
             };
         };
 
-        var logging = {
-            all: false,
-            viewport : false,
-            video : false,
-            breakpoints: false,
-            init : function()
-            {        
-                if(settings.logging.length > 0)
-                {
-                    logging.all = utility.inArrayCaseInsensitive('all', settings.logging);
-                    logging.viewport = utility.inArrayCaseInsensitive('viewport', settings.logging);
-                    logging.video = utility.inArrayCaseInsensitive('video', settings.logging);
-                    logging.breakpoints = utility.inArrayCaseInsensitive('breakpoints', settings.logging);
-                }            
-                
-            },
-            //viewport
-            logBreakPoints: function()
-            {
-                console.log('--BREAK POINTS'); 
-                console.log('----current breakpoint: ' + currentBreakpoint);
-                $.each(settings.breakpoints, function(i,val){
-                    console.log('----key: ' + val.key + ', minWidth: ' + val.minWidth + ", maxWidth: " + val.maxWidth);
-                });
-              
-            },
-            //viewport
-            logViewPortValues: function()
-            {
-                console.log('--VIEWPORT DETAILS');  
-                console.log('----' + document.documentElement.clientWidth + 'x' + document.documentElement.clientHeight);
-            },
-            //video
-            logVideoDetails: function($video)
-            {    
-                console.log('--VIDEO DETAILS'); 
-                console.log('----attributes');
-                logging.logElementAttributes($video);
-                console.log('----sources');
-                $video.find('source').each(function(){
-                    console.log('------source');
-                    console.log(logging.logElementAttributes($(this)));
-                })
-            },
-            logElementAttributes: function($el)
-            {
-                $.each($el.get(0).attributes, function(i, attrib){
-                    console.log(attrib.name + " : " + attrib.value);        
-                });
+        //viewport
+        function isElementInViewport(el) {
+            if (typeof jQuery === "function" && el instanceof jQuery) {
+                el = el[0];
             }
-        }
+            var rect = el.getBoundingClientRect();
+            var rectTop = rect.top - settings.viewPortTolerance;
+            var rectLeft = rect.left - settings.viewPortTolerance;
+            
+            var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+            var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+            
+            var vertInView = (rectTop <= windowHeight) && ((rect.top + rect.height) >= 0);
+            var horInView = (rectLeft <= windowWidth) && ((rect.left + rect.width) >= 0);
 
-        var utility = {
-            guidGenerator: function()
-            {
-                var S4 = function() {
-                    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-                };
-                return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-            },
-            inArrayCaseInsensitive: function(needle, haystackArray){
-                //Iterates over an array of items to return the index of the first item that matches the provided val ('needle') in a case-insensitive way.  Returns -1 if no match found.
-                var defaultResult = -1;
-                var result = defaultResult;
-                $.each(haystackArray, function(index, value) { 
-                    if (result == defaultResult && value.toLowerCase() == needle.toLowerCase()) {
-                        result = index;
-                    }
-                });
-                return result > -1 ? true : false;
-            },
-            isElementInViewport : function(el) {
-                var rect = el.getBoundingClientRect();
-                return rect.bottom > 0 &&
-                    rect.right > 0 &&
-                    rect.left < (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */ &&
-                    rect.top < (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */;
-            }
+            return(vertInView && horInView);
         }
+        
 
         base.init();       
 
