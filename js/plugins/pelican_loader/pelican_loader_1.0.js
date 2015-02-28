@@ -14,6 +14,8 @@
 
     //Global Public Variables
     var currentBreakpoint = '';
+    var currentWidth = '';
+
     $.fn.pelican = function( el, options ) {
         //Global Private Variables
         var base = this; 
@@ -28,6 +30,7 @@
                 {key: 'medium', minWidth: 769, maxWidth: 1024}, 
                 {key: 'large', minWidth: 1025}
             ],
+            loadSmallerImages: true,
             debug: false,
             logging: []
         }, options);        
@@ -65,30 +68,48 @@
 
         //breakpoints
         var setBreakpoint = debounce(function() {
-            var currentWidth = document.documentElement.clientWidth;
-
+            //save currently set width for comparison
+            var origWidth = currentWidth;
+            //save currently set breakpoint for comparison
+            var origBreakpoint = currentBreakpoint;
+            //update the current width with the new clientWidth
+            currentWidth = document.documentElement.clientWidth;
+            //check if the browser is getting smaller
+            var isSmaller = (currentWidth < origWidth);
+            //set the new breakpoint
             $.each(settings.breakpoints, function(i,val){
                 if(val.minWidth === undefined){
                     if(currentWidth <= val.maxWidth)
                     {
-                        currentBreakpoint = val.key;
-                    }
+                        currentBreakpoint = val;
+                    }                    
                 }
                 else if(val.maxWidth === undefined){
                     if(currentWidth >= val.minWidth)
                     {
-                        currentBreakpoint = val.key;
+                        currentBreakpoint = val;
                     }
                 }
                 else{
                     if(currentWidth >= val.minWidth && currentWidth <= val.maxWidth)
                     {
-                        currentBreakpoint = val.key;
+                        currentBreakpoint = val;
                     }
                 }
             });
+
             
-            updateElements();
+            //check if breakpoint has changed
+            //if so, update elmenents
+            //if loadSmaller set to false, do not update
+            //if new breakpoint is smaller
+            var canUpdate = (settings.loadSmallerImages === true || (settings.loadSmallerImages === false && isSmaller === false));
+            if(origBreakpoint.key !== currentBreakpoint.key && canUpdate)
+            {
+                console.log(isSmaller);                
+                updateElements();
+            }
+            
 
             if(logging.all || logging.viewport)
             {
@@ -109,13 +130,11 @@
             }
 
             var imageSources = $image.data('image-sources');
-            $.each(imageSources,function(i, o){
-                $.each( o, function( key, value ) {
-                  if(key.toLowerCase() === currentBreakpoint.toLowerCase())
-                  {
-                    $image.attr('src',value);
-                  }
-                });
+            $.each(imageSources,function(i, val){                
+                if(val[currentBreakpoint.key] !== undefined)
+                {
+                    $image.attr('src',val[currentBreakpoint.key])
+                }
             });           
             
  
