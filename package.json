@@ -1,0 +1,14 @@
+{
+  "name": "pelicanCult_responsive",
+  "version": "1.0.0",
+  "description": "responsive image loader",
+  "main": "jquery-1.11.2.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kurt Swickerath",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-uglify": "^1.1.0"
+  }
+}
