@@ -119,7 +119,7 @@ debug: false
 When `debug` is set to true, the following data will be logged to the console:
 - On page load
   - the Base pcResponsiveImages object
-  -the settings object
+  - the settings object
 - On breakpoint change
   - The current breakpoint object
 - On element updated (when the image is changed on an element)
@@ -131,6 +131,6 @@ When `debug` is set to true, the following data will be logged to the console:
 debounceTolerance: 250
 ```
 
-The `debounceTolerance` controls in miliseconds the time to use for this plugin's debounce function.
+The `debounceTolerance` controls in miliseconds the delay to use for this plugin's debounce function.
 
 
