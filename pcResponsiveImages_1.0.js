@@ -138,7 +138,6 @@
 
         function updateElement($el){
             var imageSources = $el.data('image-sources');
-            var imgAttr = '';
             var updated = false;
             if(imageSources !== undefined && imageSources.length > 0)
             {
