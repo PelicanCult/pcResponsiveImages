@@ -78,7 +78,7 @@
             //save currently set width for comparison
             var origWidth = currentWidth;
             //update the current width with the new clientWidth
-            currentWidth = document.documentElement.clientWidth;
+            currentWidth = (window.innerWidth || document.documentElement.clientWidth);
             //check if the browser is getting smaller
             var isSmaller = (currentWidth < origWidth);            
             
