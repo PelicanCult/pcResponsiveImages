@@ -51,7 +51,7 @@ $( document ).ready(function() {
 
 });
 ```
-In this call, we are also passing along the settings to be used.  The breakpoints used for the plugin can be defined here.  Note that the breakpoint keys should coorespond with the values used in the `data-image-sources` attributes.
+In this call we are also passing along the settings to be used.  The breakpoints used for the plugin can be defined here.  Note that the breakpoint keys should match the values used in the `data-image-sources` attributes.
 
 When the browser changes from one breakpoint to another, the plugin looks at the `data-image-sources` json and loads the image that is specified for that key.  The image is only loaded if it is different than the currently loaded image.
 
