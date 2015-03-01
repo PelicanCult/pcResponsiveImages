@@ -3,7 +3,7 @@
 The Pelican Cult Responsive Images JQuery plugin is a lightweight responsive image loader.  The plugin works by defining a set of breakpoints that coorespond to data-attributes added to the HTML elements on your page.  When you call the plugin on any container on the page, it will update all child elments that are identified with the supplied class name.
 
 ## Install
-To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` file to your project include the script before the closing `<\body>` and below the JQuery script tags.
+To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` file to your project and include the script before the closing `<\body>` tag and below the JQuery script tags.
 
 ## Basic Usage
 
