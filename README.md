@@ -31,7 +31,7 @@ $( document ).ready(function() {
 
 });
 ```
-This apply the plugin to all elements with the `.pelican` class in the body of the page and will use all of the default settings of the plugin.
+This applies the plugin to all elements with the `.pelican` class in the body of the page and will use all of the default settings of the plugin.
 
 ##### A typical plugin call with settings
 ```
