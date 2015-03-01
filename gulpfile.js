@@ -6,7 +6,7 @@ var gulp = require('gulp'),
 
 // define tasks here
 gulp.task('compress', function() {
-  gulp.src('pelicanCult_responsive_1.0.js')
+  gulp.src('pcResponsiveImages_1.0.js')
     .pipe(uglify({outSourceMap: true}))    
     .pipe(rename(function (path) {
         if(path.extname === '.js') {
