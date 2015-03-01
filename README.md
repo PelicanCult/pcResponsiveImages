@@ -10,6 +10,10 @@ To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` 
 1. Add a class to the HTML Elements
 2. Add a the `data-image-sources` attribute the the HTML elements
 3. Call the plugin on the parent container (for example, the `body` element)
+  - The plugin takes two parameters
+    - The class name used on the elements
+    - The setting options
+
 
 ##### Sample Image Element
 ```
