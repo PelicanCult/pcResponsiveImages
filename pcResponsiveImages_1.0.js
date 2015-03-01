@@ -164,7 +164,6 @@
                                 break;
                             default:
                             //only update if source if different
-
                                 if($el.attr('style') === undefined || $el.attr('style').toLowerCase().indexOf(val[currentBreakpoint.key].toLowerCase()) === -1 )
                                 {
                                     $el.attr('style', "background-image: url('" + val[currentBreakpoint.key] + "');");
