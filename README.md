@@ -110,7 +110,7 @@ The `viewPortTolerance` controls how close to the viewport, in pixels, that the 
 ```
 loadSmallerImages: true
 ```
-When `loadSmallerImages` is set to `tru`e, as a browser width shrinks and enters a new breakpoint, the smaller image size will be loaded. If set to `false`, smaller images will not be loaded (since an image is already downloaded to the client, there may be no need to make another request to the server).
+When `loadSmallerImages` is set to `true`, as a browser width shrinks and enters a new breakpoint, the smaller image size will be loaded. If set to `false`, smaller images will not be loaded (since an image is already downloaded to the client, there may be no need to make another request to the server).
 
 #### debug
 ```
