@@ -9,6 +9,7 @@
   "author": "Kurt Swickerath",
   "license": "ISC",
   "devDependencies": {
+    "gulp-rename": "^1.2.0",
     "gulp-uglify": "^1.1.0"
   }
 }
