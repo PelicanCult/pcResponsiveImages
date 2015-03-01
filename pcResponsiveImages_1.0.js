@@ -14,7 +14,7 @@
     var currentBreakpoint = '';
     var currentWidth = '';
 
-    $.fn.pelican = function( el, options ) {
+    $.fn.pcResponsiveImages = function( el, options ) {
         //Global Private Variables
         var base = this;
         base.$el = $(this).find(el);

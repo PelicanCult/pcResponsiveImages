@@ -23,7 +23,7 @@ The simplest call is:
 ```
 $( document ).ready(function() {
 
-      $('body').pelican('.pelican');
+      $('body').pcResponsiveImages('.pelican');
 
 });
 ```
@@ -33,7 +33,7 @@ This will use all of the default settings of the plugin
 ```
 $( document ).ready(function() {
 
-      $('body').pelican('.pelican', 
+      $('body').pcResponsiveImages('.pelican', 
       {
         loadSmallerImages: true,
         onEnterViewport: true,
