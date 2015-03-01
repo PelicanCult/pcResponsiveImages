@@ -17,7 +17,7 @@ To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` 
 
 ##### Sample Image Element
 ```
-<div class="pelican"  data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'}>
+<img class="pelican" src="" data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'}> 
 ```
 The `class="pelican"` and the `data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'` are the two pieces of information used by the plugin.  The class name can be anything you choose to identify the elments to be used by the plugin.  The data attribute is a json array that contains a breakoint key, and the image to use at that breakpoint.
 
