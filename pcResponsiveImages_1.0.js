@@ -49,7 +49,7 @@
             $( window ).scroll(function() {
                 setScroll();              
             });
-        }    
+        };    
 
         //debug
         var debug = {
@@ -61,7 +61,7 @@
                     console.log(settings);
                 }
             }
-        }       
+        };       
 
         //scroll
         var setScroll = debounce(function(){
@@ -86,22 +86,19 @@
             //set the new breakpoint
             $.each(settings.breakpoints, function(i,val){
                 if(val.minWidth === undefined){
-                    if(currentWidth <= val.maxWidth)
-                    {
+                    if(currentWidth <= val.maxWidth){
                         currentBreakpoint = val;
                         return;
                     }                    
                 }
                 else if(val.maxWidth === undefined){
-                    if(currentWidth >= val.minWidth)
-                    {
+                    if(currentWidth >= val.minWidth){
                         currentBreakpoint = val;
                         return;
                     }
                 }
                 else{
-                    if(currentWidth >= val.minWidth && currentWidth <= val.maxWidth)
-                    {
+                    if(currentWidth >= val.minWidth && currentWidth <= val.maxWidth){
                         currentBreakpoint = val;
                         return;
                     }
@@ -110,10 +107,8 @@
             
             var validLoadSmaller = (settings.loadSmallerImages || (!settings.loadSmallerImages && !isSmaller));
             //check if breakpoint has changed           
-            if(origBreakpoint.key !== currentBreakpoint.key && validLoadSmaller)
-            {        
-                if(settings.debug)  
-                {
+            if(origBreakpoint.key !== currentBreakpoint.key && validLoadSmaller){        
+                if(settings.debug){
                     console.log('-----------Breakpoint Change:');
                     console.log(currentBreakpoint.key);
                 }   
@@ -123,8 +118,7 @@
         }, settings.debounceTolerance);
 
          //elements
-        function updateElements()
-        {
+        function updateElements(){
             base.$el.each(function(){
                 var $currentElement = $(this);
                 var validViewPort = (!settings.onEnterViewport || (settings.onEnterViewport && isElementInViewport($currentElement)));
@@ -139,32 +133,27 @@
         function updateElement($el){
             var imageSources = $el.data('image-sources');
             var updated = false;
-            if(imageSources !== undefined && imageSources.length > 0)
-            {
+            if(imageSources !== undefined && imageSources.length > 0){
                 $.each(imageSources,function(i, val){ 
-                    if(val[currentBreakpoint.key] !== undefined)
-                    {
+                    if(val[currentBreakpoint.key] !== undefined){
                         switch($el.tagName()){
                             case 'img':
                             //only update if source if different
-                                if($el.attr('src') === undefined || ($el.attr('src').toLowerCase() !== val[currentBreakpoint.key].toLowerCase()))
-                                {
+                                if($el.attr('src') === undefined || ($el.attr('src').toLowerCase() !== val[currentBreakpoint.key].toLowerCase())){
                                     $el.attr('src',val[currentBreakpoint.key]);
                                     updated = true;
                                 }                                
                                 break;
                             case 'video':
                             //only update if source if different
-                                if($el.attr('poster') === undefined || ($el.attr('poster').toLowerCase() !== val[currentBreakpoint.key].toLowerCase()))
-                                {
+                                if($el.attr('poster') === undefined || ($el.attr('poster').toLowerCase() !== val[currentBreakpoint.key].toLowerCase())){
                                     $el.attr('poster',val[currentBreakpoint.key]);
                                     updated = true;
                                 }                                
                                 break;
                             default:
                             //only update if source if different
-                                if($el.attr('style') === undefined || $el.attr('style').toLowerCase().indexOf(val[currentBreakpoint.key].toLowerCase()) === -1 )
-                                {
+                                if($el.attr('style') === undefined || $el.attr('style').toLowerCase().indexOf(val[currentBreakpoint.key].toLowerCase()) === -1 ){
                                     $el.attr('style', "background-image: url('" + val[currentBreakpoint.key] + "');");
                                     updated = true;
                                 } 
@@ -172,8 +161,7 @@
                         }                    
                     }
                 });
-                if(settings.debug && updated)  
-                {
+                if(settings.debug && updated){
                     console.log('-----------Updated Image on Element:');
                     console.log($el);
                 } 
@@ -186,7 +174,7 @@
         //debounce
         function debounce(func, wait, immediate) {
             var timeout;
-            return function() {
+            return function(){
                 var context = this, args = arguments;
                 var later = function() {
                     timeout = null;
@@ -200,8 +188,8 @@
         };
 
         //viewport
-        function isElementInViewport(el) {
-            if (typeof jQuery === "function" && el instanceof jQuery) {
+        function isElementInViewport(el){
+            if (typeof jQuery === "function" && el instanceof jQuery){
                 el = el[0];
             }
             var rect = el.getBoundingClientRect();
@@ -222,9 +210,6 @@
 
         return this;
     };
-
-
- 
 }( jQuery ));
 
 
