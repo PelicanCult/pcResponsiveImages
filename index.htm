@@ -51,11 +51,11 @@
     		loadSmallerImages: true,
     		onEnterViewport: true,
     		viewPortTolerance: 50,
-	    	breakpoints: [
-	    		{key: 'small', maxWidth: 768}, 
-	    		{key: 'medium', minWidth: 769, maxWidth: 1024}, 
-	    		{key: 'large', minWidth: 1025}
-			]
+			breakpoints: {
+                'small' : '(max-width: 768px)', 
+                'medium': '(min-width: 769px) AND (max-width: 1024px)', 
+                'large': '(min-width: 1025px)'
+            }
     	});
 
 });

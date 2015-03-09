@@ -1,9 +1,11 @@
 # pcResponsiveImages
 
-The Pelican Cult Responsive Images JQuery plugin is a lightweight responsive image loader.  The plugin works by defining a set of breakpoints that coorespond to data-attributes added to the HTML elements on your page.  When you call the plugin on any container on the page, it will update all child elments that are identified with the supplied class name.
+The Pelican Cult Responsive Images JQuery plugin is a lightweight responsive image loader.  The plugin works by defining a set of media queires that coorespond to data-attributes added to the HTML elements on your page.  When you call the plugin on any container on the page, it will update all child elments that are identified with the supplied class name.
 
 ## Install
 To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` file to your project and include the script before the closing `<\body>` tag and below the JQuery script tags.
+
+This plugin relies on <a href="http://caniuse.com/#feat=matchmedia">matchMedia</a>.  For older browsers a matchMedia polyfill will be required.
 
 ## Basic Usage
 
@@ -19,7 +21,7 @@ To include the pcResponsiveImges plugin add the `pcResponsiveImages_1.0.min.js` 
 ```
 <img class="pelican" src="" data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'}> 
 ```
-The `class="pelican"` and the `data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'` are the two pieces of information used by the plugin.  The class name can be anything you choose to identify the elments to be used by the plugin.  The data attribute is a json array that contains a breakoint key, and the image to use at that breakpoint.
+The `class="pelican"` and the `data-image-sources ='[ {"small" : "img/600x450.jpg"} , {"medium": "img/1024x768.jpg"} , {"large" : "img/1600x1200.jpg"} ]'` are the two pieces of information used by the plugin.  The class name can be anything you choose to identify the elments to be used by the plugin.  The data attribute is a json array that contains a media query key, and the image to use when the media query matches the current window.
 
 ##### Sample plugin call
 
@@ -42,16 +44,16 @@ $( document ).ready(function() {
         loadSmallerImages: true,
         onEnterViewport: true,
         viewPortTolerance: 50,
-        breakpoints: [
-          {key: 'small', maxWidth: 768}, 
-          {key: 'medium', minWidth: 769, maxWidth: 1024}, 
-          {key: 'large', minWidth: 1025}
-      ]
+        breakpoints: {
+            'small' : '(max-width: 768px)', 
+            'medium': '(min-width: 769px) AND (max-width: 1024px)', 
+            'large': '(min-width: 1025px)'
+        }
       });
 
 });
 ```
-In this call we are also passing along the settings to be used.  The breakpoints used for the plugin can be defined here.  Note that the breakpoint keys should match the values used in the `data-image-sources` attributes.
+In this call we are also passing along the settings to be used.  The breakpoints used for the plugin can be defined here as media queries.  Note that the breakpoint keys should match the values used in the `data-image-sources` attributes.
 
 When the browser changes from one breakpoint to another, the plugin looks at the `data-image-sources` json and loads the image that is specified for that key.  The image is only loaded if it is different than the currently loaded image.
 
@@ -66,11 +68,11 @@ The plugin accepts the following options:
 ### Defaults
 ```
 var settings = $.extend({}, {
-    breakpoints: [
-        {key: 'small', maxWidth: 768}, 
-        {key: 'medium', minWidth: 769, maxWidth: 1024}, 
-        {key: 'large', minWidth: 1025}
-    ],
+    breakpoints: {
+        'small' : '(max-width: 768px)', 
+        'medium': '(min-width: 769px) AND (max-width: 1024px)', 
+        'large': '(min-width: 1025px)'
+    },
     onEnterViewport: false,
     viewPortTolerance: 25,
     debounceTolerance: 250,
@@ -82,18 +84,14 @@ var settings = $.extend({}, {
 
 #### Breakpoints
 ```
-breakpoints: [
-                {key: 'small', maxWidth: 768}, 
-                {key: 'medium', minWidth: 769, maxWidth: 1024}, 
-                {key: 'large', minWidth: 1025}
-            ]
+breakpoints: {
+                'small' : '(max-width: 768px)', 
+                'medium': '(min-width: 769px) AND (max-width: 1024px)', 
+                'large': '(min-width: 1025px)'
+            },
 ```
 
-An array of breakpoints that define when image sizes are switched (based on `document.documentElement.clientWidth`)
-- Each breakpoint object can contain the following properties:
-    - key: a name used to reference the breakpoint
-    - minWidth: the minimum width of the browser
-    - maxWidth: the maximum widht of the browser
+An array of breakpoints that define when image sizes are switched.  Each breakpoint contains a name and a media query.
 
 #### onEnterViewport and viewPortTolerance
 ```
